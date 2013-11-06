@@ -22,7 +22,7 @@
     <StartArguments>-i -X:Debug Program.py</StartArguments>
     <StartWorkingDirectory>.\</StartWorkingDirectory>
     <StartAction>Program</StartAction>
-    <StartProgram>C:\Program Files (x86)\SharpDevelop\4.3\bin\..\AddIns\BackendBindings\PythonBinding\ipy.exe</StartProgram>
+    <StartProgram>C:\Program Files\SharpDevelop\4.3\AddIns\BackendBindings\PythonBinding\ipy.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -34,14 +34,14 @@
     <StartArguments>Program.py</StartArguments>
     <StartWorkingDirectory>.\</StartWorkingDirectory>
     <StartAction>Program</StartAction>
-    <StartProgram>C:\Program Files (x86)\SharpDevelop\4.3\bin\..\AddIns\BackendBindings\PythonBinding\ipy.exe</StartProgram>
+    <StartProgram>C:\Program Files\SharpDevelop\4.3\bin\..\AddIns\BackendBindings\PythonBinding\ipy.exe</StartProgram>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="IronPython">
-      <HintPath>C:\Program Files %28x86%29\SharpDevelop\4.3\bin\..\AddIns\BackendBindings\PythonBinding\IronPython.dll</HintPath>
+      <HintPath>C:\Program Files\SharpDevelop\4.3\bin\..\AddIns\BackendBindings\PythonBinding\IronPython.dll</HintPath>
     </Reference>
     <Reference Include="IronPython.Modules">
-      <HintPath>C:\Program Files %28x86%29\SharpDevelop\4.3\bin\..\AddIns\BackendBindings\PythonBinding\IronPython.Modules.dll</HintPath>
+      <HintPath>C:\Program Files\SharpDevelop\4.3\bin\..\AddIns\BackendBindings\PythonBinding\IronPython.Modules.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
@@ -71,6 +71,7 @@
     <None Include="clrzmq-ext.dll" />
     <None Include="clrzmq.dll" />
     <None Include="libzmq.dll" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">
@@ -79,6 +80,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="comm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="IPYZMQ.cd" />
   </ItemGroup>
   <Import Project="$(PythonBinPath)\SharpDevelop.Build.Python.targets" />
 </Project>

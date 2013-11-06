@@ -6,6 +6,21 @@ from System.Windows.Forms import *
 
 from comm import zmq
 
+# fixme: move
+keys = {
+	Keys.Left: 'Left',
+	Keys.Right: 'Right',
+	Keys.Up: 'Up',
+	Keys.Down: 'Down',
+	Keys.End: 'End',
+	Keys.Home: 'Home',
+	Keys.Delete: 'Delete',
+	Keys.Back: 'BackSpace',
+	Keys.Tab: 'Tab',
+	Keys.PageDown: 'Page_Down',
+	Keys.PageUp: 'Page_Up',
+}
+
 
 class MainForm(Form):
 	def __init__(self):
@@ -19,7 +34,9 @@ class MainForm(Form):
 		self._fileToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
 		self._exitToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
 		self._textbox = System.Windows.Forms.RichTextBox()
+		self._status = System.Windows.Forms.ToolStripStatusLabel()
 		self._menuStrip1.SuspendLayout()
+		self._statusStrip1.SuspendLayout()
 		self.SuspendLayout()
 		# 
 		# menuStrip1
@@ -34,11 +51,12 @@ class MainForm(Form):
 		# 
 		# statusStrip1
 		# 
+		self._statusStrip1.Items.AddRange(System.Array[System.Windows.Forms.ToolStripItem](
+			[self._status]))
 		self._statusStrip1.Location = System.Drawing.Point(0, 240)
 		self._statusStrip1.Name = "statusStrip1"
 		self._statusStrip1.Size = System.Drawing.Size(284, 22)
 		self._statusStrip1.TabIndex = 1
-		self._statusStrip1.Text = "statusStrip1"
 		# 
 		# fileToolStripMenuItem
 		# 
@@ -65,9 +83,15 @@ class MainForm(Form):
 		self._textbox.TabIndex = 3
 		self._textbox.Text = ""
 		self._textbox.TextChanged += self.TextboxTextChanged
+		self._textbox.KeyDown += self.TextboxKeyDown
 		self._textbox.KeyPress += self.TextboxKeyPress
 		self._textbox.KeyUp += self.TextboxKeyUp
 		self._textbox.PreviewKeyDown += self.TextboxPreviewKeyDown
+		# 
+		# status
+		# 
+		self._status.Name = "status"
+		self._status.Size = System.Drawing.Size(0, 17)
 		# 
 		# MainForm
 		# 
@@ -80,6 +104,8 @@ class MainForm(Form):
 		self.Text = "IPYZMQ"
 		self._menuStrip1.ResumeLayout(False)
 		self._menuStrip1.PerformLayout()
+		self._statusStrip1.ResumeLayout(False)
+		self._statusStrip1.PerformLayout()
 		self.ResumeLayout(False)
 		self.PerformLayout()
 
@@ -87,7 +113,7 @@ class MainForm(Form):
 	def TextboxTextChanged(self, sender, e):
 #		zmq.send_text(e.Text)
 #		print sender, e
-		zmq.send_key('text changed')
+#		zmq.send_key('text changed')
 		
 		start_position = self.previous_position
 		index = sender.SelectionStart + sender.SelectionLength
@@ -119,4 +145,25 @@ class MainForm(Form):
 #		zmq.send_key(sender.Text[index])
 
 	def TextboxPreviewKeyDown(self, sender, e):
+		ctrl, alt, shift = [(Control.ModifierKeys & modifier) == modifier
+							for modifier in (Keys.Control, Keys.Alt, Keys.Shift)]
+		modifiers = filter(bool, [ctrl and 'Ctrl', alt and 'Alt', shift and 'Shift'])
+		self._status.Text = '+'.join(modifiers + [str(e.KeyCode)])
+
+		modifiers = [e.Control and 'c', e.Alt and 'a', e.Shift and 's']#, 
+					 #e.Win and 'w']
+		modifiers = ''.join(filter(bool, modifiers))
+		
+		prefix = modifiers and modifiers + '-' or ''
+		
+		if e.KeyCode in keys:	
+#			print 'LEFT!'	
+			key = keys[e.KeyCode]
+			zmq.send_command(prefix + key)			
+#			e.IsInputKey = True
 		pass
+
+	def TextboxKeyDown(self, sender, e):
+		print e.Alt
+		if e.Alt:
+			e.SuppressKeyPress = True
