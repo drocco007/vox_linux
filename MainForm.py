@@ -138,8 +138,10 @@ class MainForm(Form):
 #		zmq.send_key(e.KeyChar)
 		pass
 
-	def TextboxKeyUp(self, sender, e):
-		index = sender.SelectionStart + sender.SelectionLength - 1
+	def TextboxKeyUp(self, sender, e):		
+		index = sender.SelectionStart + sender.SelectionLength
+		# print 'key up, new index:', index
+		self.previous_position = index
 #		
 #		print sender.Text[index]
 #		zmq.send_key(sender.Text[index])
@@ -157,7 +159,6 @@ class MainForm(Form):
 		prefix = modifiers and modifiers + '-' or ''
 		
 		if e.KeyCode in keys:	
-#			print 'LEFT!'	
 			key = keys[e.KeyCode]
 			zmq.send_command(prefix + key)			
 #			e.IsInputKey = True
