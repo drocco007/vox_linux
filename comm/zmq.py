@@ -28,4 +28,5 @@ def send_key(key):
 	
 
 def send_command(text):
+	print 'command', text
 	send_key('\x02' + text)

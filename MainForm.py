@@ -160,7 +160,14 @@ class MainForm(Form):
 		
 		if e.KeyCode in keys:	
 			key = keys[e.KeyCode]
-			zmq.send_command(prefix + key)			
+		else:					
+			key = str(e.KeyCode)
+			if key in ('ControlKey', 'menu', 'ShiftKey', 'Apps'):
+				key = None
+				
+		if key:
+			zmq.send_command(prefix + key)
+				
 #			e.IsInputKey = True
 		pass
 
