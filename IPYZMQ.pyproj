@@ -84,5 +84,11 @@
   <ItemGroup>
     <Content Include="IPYZMQ.cd" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KeyIntercept\KeyIntercept.csproj">
+      <Project>{CB527729-BB14-4477-98E2-503E76E9A78D}</Project>
+      <Name>KeyIntercept</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(PythonBinPath)\SharpDevelop.Build.Python.targets" />
 </Project>

@@ -1,7 +1,7 @@
 import System.Drawing
 import System.Windows.Forms
 
-from System.Drawing import *
+# from System.Drawing import *
 from System import Enum
 from System.Windows.Forms import *
 
@@ -22,9 +22,36 @@ keys = {
 	Keys.PageUp: 'Page_Up',
 	Keys.Space: 'space',
 	Keys.OemMinus: 'minus',
-	Keys.D9: 'parenleft',
-	Keys.D0: 'parenright',
+	Keys.OemPeriod: '.',
+	Keys.OemQuestion: '/',
+	Keys.Oemcomma: ',',
+	Keys.Oemplus: '=',
+	Keys.OemOpenBrackets: '[',
+	Keys.D0: '0',
+	Keys.D1: '1',
+	Keys.D2: '2',
+	Keys.D3: '3',
+	Keys.D4: '4',
+	Keys.D5: '5',
+	Keys.D6: '6',
+	Keys.D7: '7',
+	Keys.D8: '8',
+	Keys.D9: '9',
+	Keys.D0: '0',
+	Keys.F1: 'F1',
+	Keys.F2: 'F2',
+	Keys.F3: 'F3',
+	Keys.F4: 'F4',
+	Keys.F5: 'F5',
+	Keys.F6: 'F6',
+	Keys.F7: 'F7',
+	Keys.F8: 'F8',
+	Keys.F9: 'F9',
+	Keys.F10: 'F10',
+	Keys.F11: 'F11',
+	Keys.F12: 'F12',
 	Keys.Oem1: ';',
+	Keys.Oem6: ']',
 	Keys.Oem7: '\'',
 }
 
@@ -45,7 +72,7 @@ class MainForm(Form):
 		self._statusStrip1 = System.Windows.Forms.StatusStrip()
 		self._fileToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
 		self._exitToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
-		self._textbox = VoiceTextBox() 
+		self._textbox = System.Windows.Forms.RichTextBox()
 		self._status = System.Windows.Forms.ToolStripStatusLabel()
 		self._menuStrip1.SuspendLayout()
 		self._statusStrip1.SuspendLayout()
@@ -86,18 +113,21 @@ class MainForm(Form):
 		# 
 		# textbox
 		# 
-		self._textbox.BorderStyle = System.Windows.Forms.BorderStyle.None
+		# self._textbox.AcceptsTab = True
+		# self._textbox.BorderStyle = System.Windows.Forms.BorderStyle.None
 		self._textbox.Dock = System.Windows.Forms.DockStyle.Fill
-		self._textbox.ImeMode = System.Windows.Forms.ImeMode.Off
+		# self._textbox.HideSelection = False
+		# self._textbox.ImeMode = System.Windows.Forms.ImeMode.Off
 		self._textbox.Location = System.Drawing.Point(0, 24)
-		self._textbox.Multiline = True
 		self._textbox.Name = "textbox"
+		# self._textbox.ShortcutsEnabled = False
 		self._textbox.Size = System.Drawing.Size(284, 216)
-		self._textbox.TabIndex = 3
+		self._textbox.TabIndex = 0
+		self._textbox.Text = ""
 		self._textbox.TextChanged += self.TextboxTextChanged
+		self._textbox.KeyDown += self.TextboxKeyDown
 		self._textbox.KeyPress += self.TextboxKeyPress
 		self._textbox.KeyUp += self.TextboxKeyUp
-		self._textbox.KeyDown += self.TextboxKeyDown
 		self._textbox.PreviewKeyDown += self.TextboxPreviewKeyDown
 		# 
 		# status
@@ -182,13 +212,10 @@ class MainForm(Form):
 		
 		if e.KeyCode in keys:	
 			key = keys[e.KeyCode]
-		elif e.Control and not e.KeyCode == Keys.ControlKey:
-			key = str(e.KeyCode) 
+		elif e.KeyCode in (Keys.ControlKey, Keys.ShiftKey):
+			key = None
 		else:
-			key = None								
-#			key = str(e.KeyCode)
-#			if key in ('ControlKey', 'Menu', 'ShiftKey', 'Apps'):
-#				key = None
+			key = str(e.KeyCode) 
 				
 		if key:
 			self.handling_keypress = True
