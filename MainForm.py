@@ -1,7 +1,8 @@
-﻿import System.Drawing
+import System.Drawing
 import System.Windows.Forms
 
 from System.Drawing import *
+from System import Enum
 from System.Windows.Forms import *
 
 from comm import zmq
@@ -200,3 +201,19 @@ class MainForm(Form):
 #		print e.Alt
 		if e.Alt:
 			e.SuppressKeyPress = True
+
+	def intercepted_key(self, e):
+		# FIXME: abstract this
+		# should always be a modifier
+		modifier, keyname = e.Key.split('-', 1)
+
+		# http://www.codeproject.com/Articles/6768/Tips-about-NET-Enums
+		key = Enum.Parse(Keys, keyname)
+
+		if key in keys:
+			key = keys[key]
+
+		key = '-'.join((modifier, str(key)))
+
+		print 'intercepted key! ' + key
+		zmq.send_command(key)
