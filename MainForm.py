@@ -27,6 +27,7 @@ keys = {
 	Keys.Oemcomma: ',',
 	Keys.Oemplus: '=',
 	Keys.OemOpenBrackets: '[',
+	Keys.Oemtilde: '~',
 	Keys.D0: '0',
 	Keys.D1: '1',
 	Keys.D2: '2',
@@ -51,6 +52,7 @@ keys = {
 	Keys.F11: 'F11',
 	Keys.F12: 'F12',
 	Keys.Oem1: ';',
+	Keys.Oem5: '|',
 	Keys.Oem6: ']',
 	Keys.Oem7: '\'',
 }
@@ -113,14 +115,14 @@ class MainForm(Form):
 		# 
 		# textbox
 		# 
-		# self._textbox.AcceptsTab = True
-		# self._textbox.BorderStyle = System.Windows.Forms.BorderStyle.None
+		self._textbox.AcceptsTab = True
+		self._textbox.BorderStyle = System.Windows.Forms.BorderStyle.None
 		self._textbox.Dock = System.Windows.Forms.DockStyle.Fill
-		# self._textbox.HideSelection = False
-		# self._textbox.ImeMode = System.Windows.Forms.ImeMode.Off
+		self._textbox.HideSelection = False
+		self._textbox.ImeMode = System.Windows.Forms.ImeMode.Off
 		self._textbox.Location = System.Drawing.Point(0, 24)
 		self._textbox.Name = "textbox"
-		# self._textbox.ShortcutsEnabled = False
+		self._textbox.ShortcutsEnabled = False
 		self._textbox.Size = System.Drawing.Size(284, 216)
 		self._textbox.TabIndex = 0
 		self._textbox.Text = ""
