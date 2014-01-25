@@ -2,7 +2,8 @@ import System.Drawing
 import System.Windows.Forms
 
 # from System.Drawing import *
-from System import Enum
+from System import Enum, Byte, Array
+from System.Text import Encoding
 from System.Windows.Forms import *
 
 from comm import zmq
@@ -67,8 +68,7 @@ class MainForm(Form):
 		self.previous_position = 0
 		self.handling_keypress = False
 		self.InitializeComponent()
-		
-	
+
 	def InitializeComponent(self):
 		self._menuStrip1 = System.Windows.Forms.MenuStrip()
 		self._statusStrip1 = System.Windows.Forms.StatusStrip()
@@ -79,9 +79,9 @@ class MainForm(Form):
 		self._menuStrip1.SuspendLayout()
 		self._statusStrip1.SuspendLayout()
 		self.SuspendLayout()
-		# 
+		#
 		# menuStrip1
-		# 
+		#
 		self._menuStrip1.Items.AddRange(System.Array[System.Windows.Forms.ToolStripItem](
 			[self._fileToolStripMenuItem]))
 		self._menuStrip1.Location = System.Drawing.Point(0, 0)
@@ -89,32 +89,32 @@ class MainForm(Form):
 		self._menuStrip1.Size = System.Drawing.Size(284, 24)
 		self._menuStrip1.TabIndex = 0
 		self._menuStrip1.Text = "menuStrip1"
-		# 
+		#
 		# statusStrip1
-		# 
+		#
 		self._statusStrip1.Items.AddRange(System.Array[System.Windows.Forms.ToolStripItem](
 			[self._status]))
 		self._statusStrip1.Location = System.Drawing.Point(0, 240)
 		self._statusStrip1.Name = "statusStrip1"
 		self._statusStrip1.Size = System.Drawing.Size(284, 22)
 		self._statusStrip1.TabIndex = 1
-		# 
+		#
 		# fileToolStripMenuItem
-		# 
+		#
 		self._fileToolStripMenuItem.DropDownItems.AddRange(System.Array[System.Windows.Forms.ToolStripItem](
 			[self._exitToolStripMenuItem]))
 		self._fileToolStripMenuItem.Name = "fileToolStripMenuItem"
 		self._fileToolStripMenuItem.Size = System.Drawing.Size(35, 20)
 		self._fileToolStripMenuItem.Text = "File"
-		# 
+		#
 		# exitToolStripMenuItem
-		# 
+		#
 		self._exitToolStripMenuItem.Name = "exitToolStripMenuItem"
 		self._exitToolStripMenuItem.Size = System.Drawing.Size(103, 22)
 		self._exitToolStripMenuItem.Text = "Exit"
-		# 
+		#
 		# textbox
-		# 
+		#
 		self._textbox.AcceptsTab = True
 		self._textbox.BorderStyle = System.Windows.Forms.BorderStyle.None
 		self._textbox.Dock = System.Windows.Forms.DockStyle.Fill
@@ -131,14 +131,14 @@ class MainForm(Form):
 		self._textbox.KeyPress += self.TextboxKeyPress
 		self._textbox.KeyUp += self.TextboxKeyUp
 		self._textbox.PreviewKeyDown += self.TextboxPreviewKeyDown
-		# 
+		#
 		# status
-		# 
+		#
 		self._status.Name = "status"
 		self._status.Size = System.Drawing.Size(0, 17)
-		# 
+		#
 		# MainForm
-		# 
+		#
 		self.ClientSize = System.Drawing.Size(284, 262)
 		self.Controls.Add(self._textbox)
 		self.Controls.Add(self._statusStrip1)
@@ -153,50 +153,49 @@ class MainForm(Form):
 		self.ResumeLayout(False)
 		self.PerformLayout()
 
-
 	def TextboxTextChanged(self, sender, e):
 		if self.handling_keypress:
 			print '(suppressed: text changed)'
 			return
-		
+
 		print 'text changed'
 		start_position = self.previous_position
 		index = sender.SelectionStart + sender.SelectionLength
-		
+
 		if index < start_position:
 			print 'LESS TEXT!', self.previous_position, index
 			for _ in range(start_position-index):
 				zmq.send_command('BackSpace')
 		else:
 			text = sender.Text
-			
+
 			print self.previous_position, index
-			
+
 	#		print sender.Text[index]
 	#		print self.prevous_position#, index
 			print text[start_position:index]
 	#		print type(sender.Text)
 			zmq.send_key(text[start_position:index])
-			
+
 		self.previous_position = index
 
 	def TextboxKeyPress(self, sender, e):
 #		print sender.SelectionStart, sender.SelectionLength
 #		print e.KeyChar
 #		index = sender.SelectionStart + sender.SelectionLength
-#		
+#
 #		print sender.Text[index]
-		
+
 #		zmq.send_key(e.KeyChar)
 		print 'key press'
 
-	def TextboxKeyUp(self, sender, e):		
+	def TextboxKeyUp(self, sender, e):
 		print 'key up'
 		index = sender.SelectionStart + sender.SelectionLength
 		# print 'key up, new index:', index
 		self.previous_position = index
 		self.handling_keypress = False
-#		
+#
 #		print sender.Text[index]
 #		zmq.send_key(sender.Text[index])
 
@@ -206,23 +205,23 @@ class MainForm(Form):
 		modifiers = filter(bool, [ctrl and 'Ctrl', alt and 'Alt', shift and 'Shift'])
 		self._status.Text = '+'.join(modifiers + [str(e.KeyCode)])
 
-		modifiers = [e.Control and 'c', e.Alt and 'a', e.Shift and 's']#, 
+		modifiers = [e.Control and 'c', e.Alt and 'a', e.Shift and 's']#,
 					 #e.Win and 'w']
 		modifiers = ''.join(filter(bool, modifiers))
-		
+
 		prefix = modifiers and modifiers + '-' or ''
-		
-		if e.KeyCode in keys:	
+
+		if e.KeyCode in keys:
 			key = keys[e.KeyCode]
 		elif e.KeyCode in (Keys.ControlKey, Keys.ShiftKey):
 			key = None
 		else:
-			key = str(e.KeyCode) 
-				
+			key = str(e.KeyCode)
+
 		if key:
 			self.handling_keypress = True
 			zmq.send_command(prefix + key)
-				
+
 #			e.IsInputKey = True
 
 	def TextboxKeyDown(self, sender, e):
@@ -232,6 +231,7 @@ class MainForm(Form):
 			e.SuppressKeyPress = True
 
 	def intercepted_key(self, e):
+		# FIXME: Split out of this program
 		# FIXME: abstract this
 		# should always be a modifier
 		modifier, keyname = e.Key.split('-', 1)
@@ -246,3 +246,21 @@ class MainForm(Form):
 
 		print 'intercepted key! ' + key
 		zmq.send_command(key)
+
+	def control_thread(self):
+		socket = zmq.context.Socket(zmq.SocketType.SUB)
+		socket.Subscribe(Array[Byte]([0x12]))
+		socket.Connect('tcp://vmhost:5556')
+
+		try:
+			while True:
+				message = socket.Recv(Encoding.UTF8)[1:]
+				print 'control message:', message
+
+				self.previous_position = 0
+				self._textbox.Text = message
+				self.previous_position = len(message)
+				self._textbox.SelectionLength = 0
+				self._textbox.SelectionStart = self.previous_position
+		except:
+			socket.Dispose()
