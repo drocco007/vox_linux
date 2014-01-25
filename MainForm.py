@@ -248,6 +248,9 @@ class MainForm(Form):
 		zmq.send_command(key)
 
 	def control_thread(self):
+		COMMAND_CLEAR = '\x1a'
+		COMMAND_TEXT = '\x02'
+
 		socket = zmq.context.Socket(zmq.SocketType.SUB)
 		socket.Subscribe(Array[Byte]([0x12]))
 		socket.Connect('tcp://vmhost:5556')
@@ -255,7 +258,18 @@ class MainForm(Form):
 		try:
 			while True:
 				message = socket.Recv(Encoding.UTF8)[1:]
-				print 'control message:', message
+
+				if not message:
+					continue
+
+				command = message[0]
+
+				if command == COMMAND_TEXT:
+					message = message[1:]
+					print 'set text buffer:', message
+				else:
+					print 'clear text buffer'
+					message = ''
 
 				self.previous_position = 0
 				self._textbox.Text = message
