@@ -1,4 +1,8 @@
-﻿import clr
+﻿import logging
+logging.basicConfig(format='%(levelname)s:%(asctime)s %(message)s',
+					level=logging.INFO)
+
+import clr
 clr.AddReference('System.Windows.Forms')
 clr.AddReference('System.Drawing')
 
