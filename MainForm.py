@@ -79,25 +79,11 @@ class MainForm(Form):
         self.InitializeComponent()
 
     def InitializeComponent(self):
-        self._menuStrip1 = System.Windows.Forms.MenuStrip()
         self._statusStrip1 = System.Windows.Forms.StatusStrip()
-        self._fileToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
-        self._exitToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
         self._textbox = System.Windows.Forms.RichTextBox()
         self._status = System.Windows.Forms.ToolStripStatusLabel()
-        self._menuStrip1.SuspendLayout()
         self._statusStrip1.SuspendLayout()
         self.SuspendLayout()
-        #
-        # menuStrip1
-        #
-        self._menuStrip1.Items.AddRange(System.Array[System.Windows.Forms.ToolStripItem](
-            [self._fileToolStripMenuItem]))
-        self._menuStrip1.Location = System.Drawing.Point(0, 0)
-        self._menuStrip1.Name = "menuStrip1"
-        self._menuStrip1.Size = System.Drawing.Size(284, 24)
-        self._menuStrip1.TabIndex = 0
-        self._menuStrip1.Text = "menuStrip1"
         #
         # statusStrip1
         #
@@ -107,20 +93,6 @@ class MainForm(Form):
         self._statusStrip1.Name = "statusStrip1"
         self._statusStrip1.Size = System.Drawing.Size(284, 22)
         self._statusStrip1.TabIndex = 1
-        #
-        # fileToolStripMenuItem
-        #
-        self._fileToolStripMenuItem.DropDownItems.AddRange(System.Array[System.Windows.Forms.ToolStripItem](
-            [self._exitToolStripMenuItem]))
-        self._fileToolStripMenuItem.Name = "fileToolStripMenuItem"
-        self._fileToolStripMenuItem.Size = System.Drawing.Size(35, 20)
-        self._fileToolStripMenuItem.Text = "File"
-        #
-        # exitToolStripMenuItem
-        #
-        self._exitToolStripMenuItem.Name = "exitToolStripMenuItem"
-        self._exitToolStripMenuItem.Size = System.Drawing.Size(103, 22)
-        self._exitToolStripMenuItem.Text = "Exit"
         #
         # textbox
         #
@@ -136,8 +108,8 @@ class MainForm(Form):
         self._textbox.TabIndex = 0
         self._textbox.Text = ""
         self._textbox.TextChanged += self.TextboxTextChanged
-        self._textbox.KeyDown += self.TextboxKeyDown
-        self._textbox.KeyPress += self.TextboxKeyPress
+        # self._textbox.KeyDown += self.TextboxKeyDown
+        # self._textbox.KeyPress += self.TextboxKeyPress
         self._textbox.KeyUp += self.TextboxKeyUp
         self._textbox.PreviewKeyDown += self.TextboxPreviewKeyDown
 
@@ -181,12 +153,8 @@ class MainForm(Form):
         self.ClientSize = System.Drawing.Size(284, 262)
         self.Controls.Add(self._textbox)
         self.Controls.Add(self._statusStrip1)
-        self.Controls.Add(self._menuStrip1)
-        self.MainMenuStrip = self._menuStrip1
         self.Name = "MainForm"
         self.Text = "IPYZMQ"
-        self._menuStrip1.ResumeLayout(False)
-        self._menuStrip1.PerformLayout()
         self._statusStrip1.ResumeLayout(False)
         self._statusStrip1.PerformLayout()
         self.ResumeLayout(False)
@@ -213,7 +181,7 @@ class MainForm(Form):
         else:
             text = sender.Text
 
-            log.info('%d %d', self.previous_position, index)
+            # log.info('%d %d', self.previous_position, index)
 
     #       log.info(sender.Text[index])
     #       log.info(self.prevous_position#, index)
@@ -224,15 +192,17 @@ class MainForm(Form):
         self.previous_position = index
         self.processing_dictation = False
 
-    def TextboxKeyPress(self, sender, e):
-#       log.info(sender.SelectionStart, sender.SelectionLength)
-#       log.info(e.KeyChar)
-#       index = sender.SelectionStart + sender.SelectionLength
-#
-#       log.info(sender.Text[index])
+        return True
 
-#       zmq.send_key(e.KeyChar)
-        log.info('key press')
+#     def TextboxKeyPress(self, sender, e):
+# #       log.info(sender.SelectionStart, sender.SelectionLength)
+# #       log.info(e.KeyChar)
+# #       index = sender.SelectionStart + sender.SelectionLength
+# #
+# #       log.info(sender.Text[index])
+
+# #       zmq.send_key(e.KeyChar)
+#         log.info('key press')
 
     def TextboxKeyUp(self, sender, e):
         log.info('key up')
@@ -240,6 +210,7 @@ class MainForm(Form):
         # log.info('key up, new index:', index)
         self.previous_position = index
         self.handling_keypress = False
+        return True
 #
 #       log.info(sender.Text[index])
 #       zmq.send_key(sender.Text[index])
@@ -270,16 +241,18 @@ class MainForm(Form):
             zmq.send_command(prefix + key)
 
 #           e.IsInputKey = True
+        return True
 
-    def TextboxKeyDown(self, sender, e):
-        log.info('key down')
-#       log.info(e.Alt)
-        if e.Alt:
-            e.SuppressKeyPress = True
+#     def TextboxKeyDown(self, sender, e):
+#         log.info('key down')
+# #       log.info(e.Alt)
+#         if e.Alt:
+#             e.SuppressKeyPress = True
 
     def handle_de_text_changed(self, *args, **kw):
         log.info('handle_de_text_changed: %s, %s', args, kw)
         self.processing_dictation = True
+        return True
 
     def intercepted_key(self, e):
         log.info('intercepted key event')
@@ -306,7 +279,7 @@ class MainForm(Form):
             cursor_position = len(text)
 
         # self._menuStrip1.Focus()
-        self.de.Reset()
+        # self.de.Reset()
         self.previous_position = cursor_position
         self._textbox.Modified = True
         self._textbox.Text = text
@@ -323,25 +296,32 @@ class MainForm(Form):
         # self._textbox.Focus()
 
     def control_thread(self):
+        log.info('starting control_thread')
+
         COMMAND_CLEAR = '\x1a'
         COMMAND_TEXT = '\x02'
 
         socket = zmq.context.Socket(zmq.SocketType.SUB)
-        socket.Subscribe(Array[Byte]([0x12]))
+        # socket.Subscribe(Array[Byte]([0x12]))
+        # socket.Subscribe(Array[Byte]([]))
         socket.Connect('tcp://vmhost:5556')
+        socket.Subscribe(Encoding.ASCII.GetBytes('\x12'))
+
 
         try:
+            log.info('control_thread started')
+            print help(zmq.context.Socket)
             while True:
-                message = socket.Recv(Encoding.UTF8)[1:]
-                log.info('control message')
+                message = socket.Recv()
+                log.info('control message: %s', message)
 
                 if not message:
                     continue
 
-                command = message[0]
+                command = message[1]
 
                 if command == COMMAND_TEXT:
-                    message = message[1:].strip()
+                    message = message[2:].strip()
                     log.info('set text buffer: %s', message)
                 else:
                     log.info('clear text buffer')
