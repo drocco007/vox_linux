@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from time import time
 import sys
 
@@ -13,6 +15,7 @@ import clr
 clr.AddReference('IronPython')
 from IronPython.Compiler import CallTarget0
 
+from textbuf import Text
 from comm import zmq
 
 # fixme: move
@@ -74,7 +77,7 @@ class VoiceTextBox(System.Windows.Forms.RichTextBox):
 
 class MainForm(Form):
     def __init__(self):
-        self.previous_position = 0
+        self.text = Text()
         self.handling_keypress = False
         self.processing_dictation = False
         self.InitializeComponent()
@@ -108,40 +111,9 @@ class MainForm(Form):
         self._textbox.Size = System.Drawing.Size(284, 216)
         self._textbox.TabIndex = 0
         self._textbox.Text = ""
-        self._textbox.TextChanged += self.TextboxTextChanged
-        # self._textbox.KeyDown += self.TextboxKeyDown
-        # self._textbox.KeyPress += self.TextboxKeyPress
         self._textbox.KeyUp += self.TextboxKeyUp
         self._textbox.PreviewKeyDown += self.TextboxPreviewKeyDown
-
-
-        print
-        print 'Textbox handle:', self._textbox.Handle
-        print
-
-        # import win32com
-        # self.de = win32com.client.Dispatch('Dragon.DictEdit.1')
-        #
-        # http://stackoverflow.com/a/3518253
-        from System import Type, Activator
-        self.de = Activator.CreateInstance(Type.GetTypeFromProgID('Dragon.DictEdit.1'))
-        # self.de = Activator.CreateInstance(Type.GetTypeFromProgID('Dragon.DictCustom.1'))
-
-        # print
-        # print self.de.Enabled
-        self.de.Register(self._textbox.Handle, 1)
-        self.de.hWndActivate = None
-        self.de.TextChanged += self.handle_de_text_changed
-
-        # self.de.Register()
-        # self.de.hWndActivate = self.Handle
-        # self.Active = True
-
-        # print dir(self.de)
-        # print self.de.Enabled
-        # print self.de.hwndEdit
-        # print self.de.hwndActivate
-        # print
+        self._textbox.SelectionChanged += self.TextboxSelectionChanged
 
         #
         # status
@@ -161,60 +133,44 @@ class MainForm(Form):
         self.ResumeLayout(False)
         self.PerformLayout()
 
-    def TextboxTextChanged(self, sender, e):
+
+    def TextboxSelectionChanged(self, sender, e):
         if self.handling_keypress:
-            log.info('(suppressed: text changed)')
             return True
-        # if not self.processing_dictation:
-        #     log.info('(suppressed: no dictation; current text: %s)', self._textbox.Text)
-        #     return
 
-        log.info('text changed')
-        start_position = self.previous_position
-        index = sender.SelectionStart + sender.SelectionLength
+        text = sender.Text
 
-        if index < start_position:
-            log.info('LESS TEXT! %d %d', self.previous_position, index)
+        if self.text != text:
+            self.text, delta = self.text.set_text(text)
 
-            # FIXME
-            for _ in range(start_position-index):
-                zmq.send_command('BackSpace')
-        else:
-            text = sender.Text
+            for op in delta:
+                # FIXME: helper…
+                if isinstance(op, basestring):
+                    zmq.send_key(op)
+                else:
+                    command, key, count = op
 
-            # log.info('%d %d', self.previous_position, index)
+                    for _ in range(count):
+                        zmq.send_command(key)
 
-    #       log.info(sender.Text[index])
-    #       log.info(self.prevous_position#, index)
-            log.info(text[start_position:index])
-    #       log.info(type(sender.Text))
-            zmq.send_key(text[start_position:index])
+            print self.text
 
-        self.previous_position = index
-        self.processing_dictation = False
+        start, length = sender.SelectionStart, sender.SelectionLength
+
+        self.text, delta = self.text.set_selection(start, length)
+
+        for command, key, count in delta:
+            for _ in range(count):
+                zmq.send_command(key)
 
         return True
-
-#     def TextboxKeyPress(self, sender, e):
-# #       log.info(sender.SelectionStart, sender.SelectionLength)
-# #       log.info(e.KeyChar)
-# #       index = sender.SelectionStart + sender.SelectionLength
-# #
-# #       log.info(sender.Text[index])
-
-# #       zmq.send_key(e.KeyChar)
-#         log.info('key press')
 
     def TextboxKeyUp(self, sender, e):
         log.info('key up')
-        index = sender.SelectionStart + sender.SelectionLength
-        # log.info('key up, new index:', index)
-        self.previous_position = index
+        self.text = Text(sender.Text, sender.SelectionStart,
+                         sender.SelectionLength)
         self.handling_keypress = False
         return True
-#
-#       log.info(sender.Text[index])
-#       zmq.send_key(sender.Text[index])
 
     def TextboxPreviewKeyDown(self, sender, e):
         log.info('preview key down')
@@ -241,14 +197,7 @@ class MainForm(Form):
             self.handling_keypress = True
             zmq.send_command(prefix + key)
 
-#           e.IsInputKey = True
         return True
-
-#     def TextboxKeyDown(self, sender, e):
-#         log.info('key down')
-# #       log.info(e.Alt)
-#         if e.Alt:
-#             e.SuppressKeyPress = True
 
     def handle_de_text_changed(self, *args, **kw):
         log.info('handle_de_text_changed: %s, %s', args, kw)
@@ -275,26 +224,9 @@ class MainForm(Form):
 
     def set_text(self, text='', cursor_position=None):
         self.handling_keypress = True
-
-        if cursor_position is None:
-            cursor_position = len(text)
-
-        # self._menuStrip1.Focus()
-        # self.de.Reset()
-        self.previous_position = cursor_position
-        self._textbox.Modified = True
         self._textbox.Text = text
-        # self._textbox.Clear()
-
-        # if text:
-        #   self._textbox.AppendText(text)
-
-        self._textbox.SelectionLength = 0
-        self._textbox.SelectionStart = self.previous_position
-        # self._textbox.AppendText('')
-        # log.info('\n\n\n%s %d %d\n\n\n', self._textbox.Text, self._textbox.SelectionStart, self._textbox.SelectionLength)
+        self.text = Text(text)
         self.handling_keypress = False
-        # self._textbox.Focus()
 
     def control_thread(self):
         log.info('starting control_thread')

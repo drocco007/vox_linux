@@ -6,6 +6,8 @@ Project("{FD48973F-F585-4F70-812B-4D0503B36CE9}") = "IPYZMQ", "IPYZMQ.pyproj", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyIntercept", "..\KeyIntercept\KeyIntercept.csproj", "{CB527729-BB14-4477-98E2-503E76E9A78D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceRelay", "..\voice_relay\VoiceRelay\VoiceRelay.csproj", "{E1987982-DF08-407D-AC1E-8637C2DEA681}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,5 +22,9 @@ Global
 		{CB527729-BB14-4477-98E2-503E76E9A78D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CB527729-BB14-4477-98E2-503E76E9A78D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CB527729-BB14-4477-98E2-503E76E9A78D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1987982-DF08-407D-AC1E-8637C2DEA681}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1987982-DF08-407D-AC1E-8637C2DEA681}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1987982-DF08-407D-AC1E-8637C2DEA681}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1987982-DF08-407D-AC1E-8637C2DEA681}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal
