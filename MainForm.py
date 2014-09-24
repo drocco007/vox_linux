@@ -1,4 +1,5 @@
 from time import time
+import sys
 
 import System.Drawing
 import System.Windows.Forms
@@ -301,39 +302,37 @@ class MainForm(Form):
         COMMAND_CLEAR = '\x1a'
         COMMAND_TEXT = '\x02'
 
-        socket = zmq.context.Socket(zmq.SocketType.SUB)
-        # socket.Subscribe(Array[Byte]([0x12]))
-        # socket.Subscribe(Array[Byte]([]))
-        socket.Connect('tcp://vmhost:5556')
-        socket.Subscribe(Encoding.ASCII.GetBytes('\x12'))
+        log.info('control_thread started')
 
+        def read_messages():
+            message = sys.stdin.readline()
 
-        try:
-            log.info('control_thread started')
-            print help(zmq.context.Socket)
-            while True:
-                message = socket.Recv()
-                log.info('control message: %s', message)
+            while message:
+                log.debug('raw message: "%s"', message)
+                yield message
+                message = sys.stdin.readline()
 
-                if not message:
-                    continue
+        for message in read_messages():
+            if message[0] != '\x12':
+                continue
 
-                command = message[1]
+            log.info('control message: "%s"', message)
+            command = message[1]
 
-                if command == COMMAND_TEXT:
-                    message = message[2:].strip()
-                    log.info('set text buffer: %s', message)
-                else:
-                    log.info('clear text buffer')
-                    message = ''
+            if command == COMMAND_TEXT:
+                message = message[2:].strip()
+                log.info('set text buffer: %s', message)
+            else:
+                log.info('clear text buffer')
+                message = ''
 
-                def _update():
-                    # self.de.Reset()
-                    self.set_text(message)
-                    # self.handling_keypress = False
+            def _update():
+                # self.de.Reset()
+                self.set_text(message)
+                # self.handling_keypress = False
 
-                self._textbox.BeginInvoke(CallTarget0(_update))
+            self._textbox.BeginInvoke(CallTarget0(_update))
 
-                log.info('control message processing complete')
-        except:
-            socket.Dispose()
+            log.info('control message processing complete')
+
+        log.info('control_thread stopping')

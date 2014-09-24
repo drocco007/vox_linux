@@ -37,4 +37,5 @@ Application.Run(form)
 zmq.send_key('\x01Bridge exiting')
 zmq.socket.Dispose()
 zmq.context.Dispose()
+
 thread.Join()
