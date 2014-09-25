@@ -56,7 +56,6 @@ def test_set_selection_generates_forward_actions():
     assert ('key', 'Right', 7) == delta[0]
     assert ('key', 's-Right', 3) == delta[1]
 
-
 def test_set_text_can_remove_from_end():
     buf = Text('going away')
     buf, delta = buf.set_text('going')
@@ -160,3 +159,25 @@ def test_can_replace_interior_selection():
     assert buf.selection_length == 0
 
     assert 'ote' == delta[0]
+
+
+def test_correct_selection_on_initial_insert():
+    buf = Text('Netbook',  0, 0)
+    text = 'Notebooks of Netbook'
+    buf, delta = buf.set_text(text)
+
+    assert buf.text == text
+    assert buf.position ==  13
+    assert buf.selection_length == 0
+
+
+def test_scratch_selection():
+    buf = Text('Notebooks of Netbooks',  0, 13)
+    text = 'Netbooks'
+    buf, delta = buf.set_text(text)
+
+    assert buf.text == text
+    assert buf.position ==  0
+    assert buf.selection_length == 0
+
+    assert ('key', 'BackSpace', 1) == delta[0]

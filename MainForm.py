@@ -145,27 +145,21 @@ class MainForm(Form):
                  repr(text), start, length)
 
         if self.text.text != text:
-            self.text, delta = self.text.set_text(text)
+            self.text, text_delta = self.text.set_text(text)
+        else:
+            text_delta = []
 
-            for op in delta:
-                # FIXME: helper…
-                if isinstance(op, basestring):
-                    zmq.send_key(op)
-                else:
-                    command, key, count = op
+        self.text, selection_delta = self.text.set_selection(start, length)
 
-                    for _ in range(count):
-                        zmq.send_command(key)
+        delta = text_delta + selection_delta
+        for op in delta:
+            if isinstance(op, basestring):
+                zmq.send_key(op)
+            else:
+                command, key, count = op
 
-            print self.text
-
-        start, length = sender.SelectionStart, sender.SelectionLength
-
-        self.text, delta = self.text.set_selection(start, length)
-
-        for command, key, count in delta:
-            for _ in range(count):
-                zmq.send_command(key)
+                for _ in range(count):
+                    zmq.send_command(key)
 
         return True
 

@@ -7,6 +7,7 @@ def generate_edit_keys(a, b, position=None):
     if position is None:
         position = len(a)
 
+    length = 0
     edits = []
 
     for tag, i1, i2, j1, j2 in SequenceMatcher(None, a, b).get_opcodes():
@@ -18,11 +19,13 @@ def generate_edit_keys(a, b, position=None):
 
         if tag in {'delete', 'replace'}:
             edits.append(('key', 'Delete', i2 - i1))
+            length -= i2 - i1
 
         if tag in {'insert', 'replace'}:
             edits.append(b[j1:j2])
+            length += j2 - j1
 
-    return edits
+    return edits, length
 
 
 class Text(object):
@@ -75,17 +78,21 @@ class Text(object):
                 length = self.selection_length + len(text) - len(self.text)
                 text = text[i:i + length]
                 diff = text
-            else:
+
+            if not text:
                 text = ''
                 diff = ('key', 'BackSpace', 1)
+                length = 0
 
             new_text = self._replace_selection(text)
-            return Text(new_text, position=self.position + len(text)), [diff]
+            return Text(new_text, position=self.position + length), [diff]
         else:
-            return Text(text), generate_edit_keys(self.text, text, self.position)
+            edits, length = generate_edit_keys(self.text, text, self.position)
+            position = self.position + length
+            return Text(text, position=position), edits
 
     def __repr__(self):
-        return u'<{text}, [{position}:{length}]→"{selected_text}">'.format(
+        return u'<{text}, [{position}:{length}]->"{selected_text}">'.format(
             text=self.text,
             position=self.position,
             length=self.selection_length,
