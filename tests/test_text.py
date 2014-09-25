@@ -38,7 +38,7 @@ def test_set_selection_generates_backward_actions():
     assert 8 == count
 
 
-def test_set_selection_generates_forward_actions():
+def test_set_selection_generates_forward_action():
     buf = Text('Moving ahead', position=0)
     buf, delta = buf.set_selection(7, 0)
 
@@ -122,7 +122,6 @@ def test_identical_selection_should_have_no_delta():
     buf, delta = buf.set_selection(8, 0)
     assert not delta
 
-
 def test_selected_update():
     buf = Text('Notebook', 0, 8)
     text = 'Netbook'
@@ -149,3 +148,15 @@ def test_can_clear_interior_selection():
     assert buf.selection_length == 0
 
     assert ('key', 'BackSpace', 1) == delta[0]
+
+
+def test_can_replace_interior_selection():
+    buf = Text('Netbook', 1, 2)
+    text = 'Notebook'
+    buf, delta = buf.set_text(text)
+
+    assert buf.text == text
+    assert buf.position == 4
+    assert buf.selection_length == 0
+
+    assert 'ote' == delta[0]

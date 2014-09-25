@@ -70,9 +70,17 @@ class Text(object):
 
     def set_text(self, text):
         if self.selection:
-            diff = text if text else ('key', 'BackSpace', 1)
+            if text:
+                i = self.position
+                length = self.selection_length + len(text) - len(self.text)
+                text = text[i:i + length]
+                diff = text
+            else:
+                text = ''
+                diff = ('key', 'BackSpace', 1)
+
             new_text = self._replace_selection(text)
-            return Text(new_text, position=self.position), [diff]
+            return Text(new_text, position=self.position + len(text)), [diff]
         else:
             return Text(text), generate_edit_keys(self.text, text, self.position)
 
