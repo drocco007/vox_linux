@@ -13,62 +13,6 @@ def test_can_initialize_text():
     assert buf.position == len(text)
 
 
-def test_can_add_text():
-    text = 'Playing'
-    new_text = ' again'
-
-    buf = Text(text)
-    buf, delta = buf + new_text
-
-    result = text + new_text
-
-    assert buf.position == len(result)
-    assert buf.text == result
-
-
-def test_can_add_at_selection():
-    text = 'Ping'
-    new_text = 'lay'
-
-    buf = Text(text)
-    buf, delta = buf.set_selection(1, 0)
-
-    buf, delta = buf + new_text
-
-    result = 'Playing'
-
-    assert buf.position == len(result)
-    assert buf.text == result
-
-
-def test_can_replace_selection():
-    text = 'origin'
-    new_text = 'destiny'
-
-    buf = Text(text)
-    buf, delta = buf.set_selection(0, len(text))
-
-    buf, delta = buf + new_text
-
-    assert buf.position == len(new_text)
-    assert buf.text == new_text
-
-
-def test_can_replace_interior_selection():
-    text = 'origin'
-    new_text = 'ga'
-
-    buf = Text(text)
-    buf, delta = buf.set_selection(2, 3)
-
-    buf, delta = buf + new_text
-
-    result = 'organ'
-
-    assert buf.position == len(result)
-    assert buf.text == result
-
-
 def test_can_set_text():
     text = 'Playing'
     new_text = 'Playing again'
@@ -171,3 +115,37 @@ def test_can_expand_selection():
     assert ('key', 'Left', 1) == delta[0]
     assert ('key', 'Left', 1) == delta[1]
     assert ('key', 's-Right', 5) == delta[2]
+
+
+def test_identical_selection_should_have_no_delta():
+    buf = Text('Notebook')
+    buf, delta = buf.set_selection(8, 0)
+    assert not delta
+
+
+def test_selected_update():
+    buf = Text('Notebook', 0, 8)
+    text = 'Netbook'
+    buf, delta = buf.set_text(text)
+
+    assert text == delta[0]
+
+
+def test_can_clear_selection():
+    buf = Text('Notebook', 0, 8)
+    text = ''
+    buf, delta = buf.set_text(text)
+
+    assert ('key', 'BackSpace', 1) == delta[0]
+
+
+def test_can_clear_interior_selection():
+    buf = Text('Notebook', 2, 4)
+    text = ''
+    buf, delta = buf.set_text(text)
+
+    assert buf.text == 'Nook'
+    assert buf.position == 2
+    assert buf.selection_length == 0
+
+    assert ('key', 'BackSpace', 1) == delta[0]

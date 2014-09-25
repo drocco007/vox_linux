@@ -32,12 +32,10 @@ class Text(object):
         self.selection_length = length
         self.selection = text[self.position:self.position + length]
 
-    def __add__(self, other):
+    def _replace_selection(self, text):
         prefix, postfix = self.text[:self.position], \
             self.text[self.position + self.selection_length:]
-        result = ''.join((prefix, other, postfix))
-
-        return Text(result), None
+        return ''.join((prefix, text, postfix))
 
     def expand_selection(self, position, length):
         delta = length - self.selection_length
@@ -71,15 +69,12 @@ class Text(object):
         return Text(self.text, position, length), diff
 
     def set_text(self, text):
-        return Text(text), generate_edit_keys(self.text, text, self.position)
-        diff = []
-
-        if not self.selection and len(text) < len(self.text):
-            diff.append(('key', 'BackSpace', len(self.text) - len(text)))
+        if self.selection:
+            diff = text if text else ('key', 'BackSpace', 1)
+            new_text = self._replace_selection(text)
+            return Text(new_text, position=self.position), [diff]
         else:
-            diff.append(text[len(self.text):])
-
-        return Text(text), diff
+            return Text(text), generate_edit_keys(self.text, text, self.position)
 
     def __repr__(self):
         return u'<{text}, [{position}:{length}]→"{selected_text}">'.format(

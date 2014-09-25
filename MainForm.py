@@ -138,9 +138,13 @@ class MainForm(Form):
         if self.handling_keypress:
             return True
 
+        start, length = sender.SelectionStart, sender.SelectionLength
         text = sender.Text
 
-        if self.text != text:
+        log.info('selection changed, text="%s" [%d:%d]',
+                 repr(text), start, length)
+
+        if self.text.text != text:
             self.text, delta = self.text.set_text(text)
 
             for op in delta:
