@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from time import time
+from time import time, sleep
 import sys
 
 import System.Drawing
@@ -81,13 +81,39 @@ class MainForm(Form):
         self.handling_keypress = False
         self.processing_dictation = False
         self.InitializeComponent()
+        self.start_timer()
+
+    def start_timer(self):
+        self.sayings = [
+            "The quick brown fox jumped over the lazy dog.",
+            "Something else...",
+            "Look! Paragraph! ¶\n\nIt is cs if…"
+        ]
+        self.saying = 0
+        # self.timer1.Start()
+        self.backgroundWorker1.WorkerReportsProgress = True;
+        self.backgroundWorker1.WorkerSupportsCancellation = True;
+        self.backgroundWorker1.RunWorkerAsync();
 
     def InitializeComponent(self):
+        self.components = System.ComponentModel.Container();
+        self.timer1 = System.Windows.Forms.Timer(self.components);
+        self.backgroundWorker1 = System.ComponentModel.BackgroundWorker();
         self._statusStrip1 = System.Windows.Forms.StatusStrip()
         self._textbox = System.Windows.Forms.RichTextBox()
         self._status = System.Windows.Forms.ToolStripStatusLabel()
         self._statusStrip1.SuspendLayout()
         self.SuspendLayout()
+        #
+        # timer1
+        #
+        self.timer1.Interval = 10000;
+        self.timer1.Tick += System.EventHandler(self.timer1_Tick);
+        #
+        # backgroundWorker1
+        #
+        self.backgroundWorker1.DoWork += System.ComponentModel.DoWorkEventHandler(self.backgroundWorker1_DoWork);
+        self.backgroundWorker1.ProgressChanged += System.ComponentModel.ProgressChangedEventHandler(self.backgroundWorker1_ProgressChanged);
         #
         # statusStrip1
         #
@@ -133,6 +159,45 @@ class MainForm(Form):
         self.ResumeLayout(False)
         self.PerformLayout()
 
+
+    def timer1_Tick(self, sender, e):
+        self._textbox.Text = self.sayings[self.saying]
+        self.saying = (self.saying + 1) % len(self.sayings)
+
+    def backgroundWorker1_ProgressChanged(self, sender, e):
+        self.set_text(e.UserState)
+        # self._textbox.Text = e.UserState
+        # self._textbox.AppendText("\n")
+
+    def backgroundWorker1_DoWork(self, sender, e):
+        COMMAND_CLEAR = '\x1a'
+        COMMAND_TEXT = '\x02'
+        log.info('control_thread started')
+
+        message = sys.stdin.readline()
+
+        while message:
+            # line = self.sayings[self.saying]
+            # self.saying = (self.saying + 1) % len(self.sayings)
+            # self.backgroundWorker1.ReportProgress(0, line)
+            # sleep(10)
+
+            # log.debug('raw message: "%s"', message)
+
+            if message[0] == '\x12':
+                log.info('control message: "%s"', message)
+                command = message[1]
+
+                if command == COMMAND_TEXT:
+                    message = message[2:]
+                    log.info('set text buffer: %s', message)
+                else:
+                    log.info('clear text buffer')
+                    message = ''
+
+                self.backgroundWorker1.ReportProgress(0, message)
+
+            message = sys.stdin.readline()
 
     def TextboxSelectionChanged(self, sender, e):
         if self.handling_keypress:

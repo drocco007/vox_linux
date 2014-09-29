@@ -28,9 +28,9 @@ form = MainForm.MainForm()
 keyboard_hook.KeyIntercepted += form.intercepted_key
 
 
-print 'SUB for control messages'
-thread = Thread(ThreadStart(form.control_thread))
-thread.Start()
+# print 'SUB for control messages'
+# thread = Thread(ThreadStart(form.control_thread))
+# thread.Start()
 
 Application.Run(form)
 
