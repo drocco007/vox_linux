@@ -6,11 +6,8 @@ import clr
 clr.AddReference('System.Windows.Forms')
 clr.AddReference('System.Drawing')
 
-import sys
-sys.path.append(r'v:\dragon_relay\bin\Debug')
 clr.AddReferenceToFile('KeyIntercept.dll')
 
-#clr.AddReferenceToFile("KeyIntercept.dll")
 from KeyIntercept import KeyboardHook
 
 from System.Threading import Thread, ThreadStart
@@ -20,20 +17,21 @@ from comm import zmq
 import MainForm
 
 
+# initialize the keyboard intercept hook to capture Alt/Win key chords
 keyboard_hook = KeyboardHook.setHook()
 
 Application.EnableVisualStyles()
 form = MainForm.MainForm()
 
+
+# Notify the form when a key is intercepted
 keyboard_hook.KeyIntercepted += form.intercepted_key
 
 
-# print 'SUB for control messages'
-# thread = Thread(ThreadStart(form.control_thread))
-# thread.Start()
-
 Application.Run(form)
 
+
+# Clean up
 zmq.send_key('\x01Bridge exiting')
 zmq.socket.Dispose()
 zmq.context.Dispose()
