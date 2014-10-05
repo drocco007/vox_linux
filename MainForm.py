@@ -189,7 +189,7 @@ class MainForm(Form):
                 command = message[1]
 
                 if command == COMMAND_TEXT:
-                    message = message[2:]
+                    message = message[2:-1]
                     log.info('set text buffer: %s', message)
                 else:
                     log.info('clear text buffer')
@@ -287,8 +287,14 @@ class MainForm(Form):
 
     def set_text(self, text='', cursor_position=None):
         self.handling_keypress = True
+
+        selection_start = len(text)
         self._textbox.Text = text
-        self.text = Text(text)
+        self._textbox.SelectionStart = selection_start
+        self._textbox.SelectionLength = 0
+
+        self.text = Text(text, selection_start)
+
         self.handling_keypress = False
 
     def control_thread(self):
