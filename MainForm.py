@@ -153,7 +153,7 @@ class MainForm(Form):
         self.Controls.Add(self._textbox)
         self.Controls.Add(self._statusStrip1)
         self.Name = "MainForm"
-        self.Text = "IPYZMQ"
+        self.Text = "Dragon Relay"
         self._statusStrip1.ResumeLayout(False)
         self._statusStrip1.PerformLayout()
         self.ResumeLayout(False)

@@ -7,7 +7,7 @@ clr.AddReference('System.Windows.Forms')
 clr.AddReference('System.Drawing')
 
 import sys
-sys.path.append(r'v:\IPYZMQ\bin\Debug')
+sys.path.append(r'v:\dragon_relay\bin\Debug')
 clr.AddReferenceToFile('KeyIntercept.dll')
 
 #clr.AddReferenceToFile("KeyIntercept.dll")
