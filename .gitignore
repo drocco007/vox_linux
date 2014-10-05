@@ -1,0 +1,4 @@
+.idea/
+*.pyc
+vox.egg-info
+voice_relay.*
