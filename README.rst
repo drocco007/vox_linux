@@ -1,9 +1,12 @@
-==============
- Dragon Relay
-==============
+=========================
+ Vox: Linux Dragon Relay
+=========================
 
-Welcome to Dragon Relay, a system to control a Linux system using
-Dragon NaturallySpeaking.
+Welcome to Vox, a system to control a Linux system using Dragon
+NaturallySpeaking.
+
+This is the Windows side of the relay; the other half of Vox lives
+`on the Linux host <https://github.com/drocco007/vox_linux>`_.
 
 
 Prerequisites
