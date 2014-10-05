@@ -6,17 +6,13 @@ import sys
 import System.Drawing
 import System.Windows.Forms
 
-# from System.Drawing import *
 from System import Enum, Byte, Array
 from System.Text import Encoding
 from System.Windows.Forms import *
 
-import clr
-clr.AddReference('IronPython')
-from IronPython.Compiler import CallTarget0
-
 from textbuf import Text
 from comm import zmq
+
 
 # fixme: move
 keys = {
@@ -71,9 +67,6 @@ keys = {
 
 import logging as log
 
-class VoiceTextBox(System.Windows.Forms.RichTextBox):
-    pass
-
 
 class MainForm(Form):
     def __init__(self):
@@ -81,34 +74,21 @@ class MainForm(Form):
         self.handling_keypress = False
         self.processing_dictation = False
         self.InitializeComponent()
-        self.start_timer()
+        self.start_worker()
 
-    def start_timer(self):
-        self.sayings = [
-            "The quick brown fox jumped over the lazy dog.",
-            "Something else...",
-            "Look! Paragraph! ¶\n\nIt is cs if…"
-        ]
-        self.saying = 0
-        # self.timer1.Start()
+    def start_worker(self):
         self.backgroundWorker1.WorkerReportsProgress = True;
         self.backgroundWorker1.WorkerSupportsCancellation = True;
         self.backgroundWorker1.RunWorkerAsync();
 
     def InitializeComponent(self):
         self.components = System.ComponentModel.Container();
-        self.timer1 = System.Windows.Forms.Timer(self.components);
         self.backgroundWorker1 = System.ComponentModel.BackgroundWorker();
         self._statusStrip1 = System.Windows.Forms.StatusStrip()
         self._textbox = System.Windows.Forms.RichTextBox()
         self._status = System.Windows.Forms.ToolStripStatusLabel()
         self._statusStrip1.SuspendLayout()
         self.SuspendLayout()
-        #
-        # timer1
-        #
-        self.timer1.Interval = 10000;
-        self.timer1.Tick += System.EventHandler(self.timer1_Tick);
         #
         # backgroundWorker1
         #
@@ -159,15 +139,8 @@ class MainForm(Form):
         self.ResumeLayout(False)
         self.PerformLayout()
 
-
-    def timer1_Tick(self, sender, e):
-        self._textbox.Text = self.sayings[self.saying]
-        self.saying = (self.saying + 1) % len(self.sayings)
-
     def backgroundWorker1_ProgressChanged(self, sender, e):
         self.set_text(e.UserState)
-        # self._textbox.Text = e.UserState
-        # self._textbox.AppendText("\n")
 
     def backgroundWorker1_DoWork(self, sender, e):
         COMMAND_CLEAR = '\x1a'
@@ -177,13 +150,6 @@ class MainForm(Form):
         message = sys.stdin.readline()
 
         while message:
-            # line = self.sayings[self.saying]
-            # self.saying = (self.saying + 1) % len(self.sayings)
-            # self.backgroundWorker1.ReportProgress(0, line)
-            # sleep(10)
-
-            # log.debug('raw message: "%s"', message)
-
             if message[0] == '\x12':
                 log.info('control message: "%s"', message)
                 command = message[1]
@@ -262,11 +228,6 @@ class MainForm(Form):
 
         return True
 
-    def handle_de_text_changed(self, *args, **kw):
-        log.info('handle_de_text_changed: %s, %s', args, kw)
-        self.processing_dictation = True
-        return True
-
     def intercepted_key(self, e):
         log.info('intercepted key event')
         # FIXME: Split out of this program
@@ -296,44 +257,3 @@ class MainForm(Form):
         self.text = Text(text, selection_start)
 
         self.handling_keypress = False
-
-    def control_thread(self):
-        log.info('starting control_thread')
-
-        COMMAND_CLEAR = '\x1a'
-        COMMAND_TEXT = '\x02'
-
-        log.info('control_thread started')
-
-        def read_messages():
-            message = sys.stdin.readline()
-
-            while message:
-                log.debug('raw message: "%s"', message)
-                yield message
-                message = sys.stdin.readline()
-
-        for message in read_messages():
-            if message[0] != '\x12':
-                continue
-
-            log.info('control message: "%s"', message)
-            command = message[1]
-
-            if command == COMMAND_TEXT:
-                message = message[2:].strip()
-                log.info('set text buffer: %s', message)
-            else:
-                log.info('clear text buffer')
-                message = ''
-
-            def _update():
-                # self.de.Reset()
-                self.set_text(message)
-                # self.handling_keypress = False
-
-            self._textbox.BeginInvoke(CallTarget0(_update))
-
-            log.info('control message processing complete')
-
-        log.info('control_thread stopping')
