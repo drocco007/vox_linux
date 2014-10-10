@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from time import time, sleep
+import string
 import sys
 
 import System.Drawing
@@ -221,6 +222,9 @@ class MainForm(Form):
             key = None
         else:
             key = str(e.KeyCode)
+
+            if key in set(string.uppercase):
+                key = key.lower()
 
         if key:
             self.handling_keypress = True
