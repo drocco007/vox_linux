@@ -8,7 +8,7 @@ from process_utils import spawn_daemon_process
 
 
 modifier_map = {
-    'a': 'alt',
+    'a': 'Alt_R',
     'c': 'ctrl',
     's': 'shift',
     'w': 'super',
@@ -102,11 +102,10 @@ def relay_text_worker(host='localhost'):
             command = special_X_keysyms.get(command, command)
             command = '+'.join(modifiers + [command])
 
-            print '.key:', command
-
-            do.send_keysequence_window(CURRENTWINDOW, command, delay=25)
+            # print '.key:', command
+            do.send_keysequence_window(CURRENTWINDOW, command, delay=10)
         else:
-            print '.text: {} ({})'.format(message, type(message))
+            # print '.text: {} ({})'.format(message, type(message))
             do.enter_text_window(CURRENTWINDOW, message)
 
 
