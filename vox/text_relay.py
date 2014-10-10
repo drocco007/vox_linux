@@ -5,7 +5,54 @@ from xdo.xdo import CURRENTWINDOW
 import zmq
 
 from process_utils import spawn_daemon_process
-import pykey
+
+
+modifier_map = {
+    'a': 'alt',
+    'c': 'ctrl',
+    's': 'shift',
+    'w': 'super',
+}
+
+special_X_keysyms = {
+    ' ' : 'space',
+    '\t' : 'Tab',
+    '\n' : 'Return',
+    '\r' : 'Return',
+    '\e' : 'Escape',
+    '!' : 'exclam',
+    '#' : 'numbersign',
+    '%' : 'percent',
+    '$' : 'dollar',
+    '&' : 'ampersand',
+    '"' : 'quotedbl',
+    '\'' : 'apostrophe',
+    '(' : 'parenleft',
+    ')' : 'parenright',
+    '*' : 'asterisk',
+    '=' : 'equal',
+    '+' : 'plus',
+    ',' : 'comma',
+    '-' : 'minus',
+    '.' : 'period',
+    '/' : 'slash',
+    ':' : 'colon',
+    ';' : 'semicolon',
+    '<' : 'less',
+    '>' : 'greater',
+    '?' : 'question',
+    '@' : 'at',
+    '[' : 'bracketleft',
+    ']' : 'bracketright',
+    '\\' : 'backslash',
+    '^' : 'asciicircum',
+    '_' : 'underscore',
+    '`' : 'grave',
+    '{' : 'braceleft',
+    '|' : 'bar',
+    '}' : 'braceright',
+    '~' : 'asciitilde'
+}
 
 
 # FIXME: extract to a common module
@@ -45,15 +92,19 @@ def relay_text_worker(host='localhost'):
 
         if message[0] == '\x02':
             command = message[1:]
-            print '.key:', command
 
             if '-' in command:
                 modifiers, command = command.split('-', 1)
+                modifiers = [modifier_map[modifier] for modifier in modifiers]
             else:
-                modifiers = ''
+                modifiers = []
 
-            pykey.send_keysym(command, modifiers)
-            pykey.display.sync()
+            command = special_X_keysyms.get(command, command)
+            command = '+'.join(modifiers + [command])
+
+            print '.key:', command
+
+            do.send_keysequence_window(CURRENTWINDOW, command, delay=25)
         else:
             print '.text: {} ({})'.format(message, type(message))
             do.enter_text_window(CURRENTWINDOW, message)
