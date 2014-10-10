@@ -234,8 +234,10 @@ class MainForm(Form):
 
     def intercepted_key(self, e):
         log.info('intercepted key event')
-        # FIXME: Split out of this program
-        # FIXME: abstract this
+        # FIXME: Split key intercept handling out of this program
+        # FIXME: abstract key processing to a helper module; replace key
+        # processing here and in preview key down
+
         # should always be a modifier
         modifier, keyname = e.Key.split('-', 1)
 
@@ -245,7 +247,12 @@ class MainForm(Form):
         if key in keys:
             key = keys[key]
 
-        key = '-'.join((modifier, str(key)))
+        key = str(key)
+
+        if key in set(string.uppercase):
+            key = key.lower()
+
+        key = '-'.join((modifier, key))
 
         log.info('intercepted key: ' + key)
         zmq.send_command(key)
