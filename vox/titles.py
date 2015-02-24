@@ -2,11 +2,8 @@ import gtk
 import wnck
 import zmq
 
+from commands import format_app_name_command
 from process_utils import spawn_daemon_process
-
-
-COMMAND_BROADCAST_TITLE='\x05'
-RECORD_SEPARATOR='\x1e'
 
 
 def init_zmq(host='localhost'):
@@ -35,11 +32,7 @@ def sniff_titles(screen=None, host='localhost'):
             window = screen.get_active_window()
             application = translate(window.get_application().get_name())
 
-            payload = '{}{}{}{}'.format(COMMAND_BROADCAST_TITLE,
-                                        window.get_name(),
-                                        RECORD_SEPARATOR,
-                                        application)
-
+            payload = format_app_name_command(window.get_name(), application)
             socket.send(payload)
         except:
             pass
@@ -50,9 +43,6 @@ def sniff_titles(screen=None, host='localhost'):
 
 
 def broadcast_title_changes(host='localhost'):
-    # import signal
-    # signal.signal(signal.SIGINT, signal.SIG_DFL)
-
     return spawn_daemon_process(sniff_titles, call_kw={'host': host})
 
 

@@ -14,3 +14,12 @@ def is_text_command(message):
     "Determine if a message is a text entry command (press key or play text)"
 
     return message and message[0] in {PRESS_KEY, PLAY_TEXT}
+
+
+def format_app_name_command(window_name, application_name):
+    "Format application name and title broadcast command"
+
+    return '{}{}{}{}'.format(BROADCAST_APPLICATION_TITLE,
+                             window_name,
+                             RECORD_SEPARATOR,
+                             application_name)
