@@ -1,4 +1,11 @@
-.idea/
+﻿.idea/
+bin/
+obj/
+*.suo
 *.pyc
 vox.egg-info
 voice_relay.*
+t
+*.cd
+packages.config
+packages/
