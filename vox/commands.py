@@ -9,6 +9,8 @@ MANAGE_BUFFER = '\x12'
 BUFFER_SET_TEXT = '\x02'
 BUFFER_CLEAR = '\x1a'
 
+CLEAR_BUFFER_COMMAND = ''.join((MANAGE_BUFFER, BUFFER_CLEAR))
+
 
 def is_text_command(message):
     "Determine if a message is a text entry command (press key or play text)"
