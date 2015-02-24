@@ -16,6 +16,7 @@ modifier_map = {
     'w': uinput.KEY_LEFTMETA,
 }
 
+
 key_map = {
     'a': uinput.KEY_A,
     'b': uinput.KEY_B,
@@ -62,6 +63,7 @@ key_map = {
     'space': uinput.KEY_SPACE,
     'Delete': uinput.KEY_DELETE,
     'Escape': uinput.KEY_ESC,
+    'BackSpace': uinput.KEY_BACKSPACE,
 
     '.': uinput.KEY_DOT,
     ',': uinput.KEY_COMMA,
@@ -73,6 +75,7 @@ key_map = {
     ']': uinput.KEY_RIGHTBRACE,
     '-': uinput.KEY_MINUS,
     'minus': uinput.KEY_MINUS,
+    '=': uinput.KEY_EQUAL,
 
     'Left': uinput.KEY_LEFT,
     'Right': uinput.KEY_RIGHT,
@@ -84,7 +87,18 @@ key_map = {
     'Page_Down': uinput.KEY_PAGEDOWN,
     'Insert': uinput.KEY_INSERT,
 
-    'BackSpace': uinput.KEY_BACKSPACE,
+    'F1': uinput.KEY_F1,
+    'F2': uinput.KEY_F2,
+    'F3': uinput.KEY_F3,
+    'F4': uinput.KEY_F4,
+    'F5': uinput.KEY_F5,
+    'F6': uinput.KEY_F6,
+    'F7': uinput.KEY_F7,
+    'F8': uinput.KEY_F8,
+    'F9': uinput.KEY_F9,
+    'F10': uinput.KEY_F10,
+    'F11': uinput.KEY_F11,
+    'F12': uinput.KEY_F12,
 }
 
 
@@ -92,6 +106,7 @@ chord_map = {
     ':': [uinput.KEY_LEFTSHIFT, uinput.KEY_SEMICOLON],
     '?': [uinput.KEY_LEFTSHIFT, uinput.KEY_SLASH],
     '"': [uinput.KEY_LEFTSHIFT, uinput.KEY_APOSTROPHE],
+    '+': [uinput.KEY_LEFTSHIFT, uinput.KEY_EQUAL],
 }
 
 
