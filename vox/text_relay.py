@@ -3,6 +3,7 @@
 import uinput
 import zmq
 
+from commands import PRESS_KEY, PLAY_TEXT
 from process_utils import spawn_daemon_process
 
 
@@ -116,26 +117,14 @@ def init_zmq(host='localhost'):
 
     socket = context.socket(zmq.SUB)
     socket.connect('tcp://{}:5556'.format(host))
-    socket.setsockopt(zmq.SUBSCRIBE, '')
+
+    socket.setsockopt(zmq.SUBSCRIBE, PRESS_KEY)
+    socket.setsockopt(zmq.SUBSCRIBE, PLAY_TEXT)
 
     return socket
 
 
-def is_command(message):
-    #
-    # FIXME: command constant for text…
-    #
-
-    command = message[0]
-
-    return command in {'\x01', '\x11', '\x12', '\x05'}
-
-
-def is_text(message):
-    return not is_command(message)
-
-
-def unpack_command(command):
+def unpack_keycodes(command):
     if '-' in command:
         modifiers, command = command.split('-', 1)
         modifiers = [modifier_map[modifier] for modifier in modifiers]
@@ -183,15 +172,14 @@ def relay_text_worker(host='localhost'):
         while True:
             message = socket.recv()
 
-            if not message or is_command(message):
-                continue
+            command, message = message[0], message[1:]
 
             try:
-                if message[0] == '\x02':
-                    command = unpack_command(message[1:])
+                if command == PRESS_KEY:
+                    keycodes = unpack_keycodes(message)
 
-                    # print '.key:', message[1:], '→', command
-                    kbd.emit_combo(command)
+                    # print '.key:', message[1:], '→', keycodes
+                    kbd.emit_combo(keycodes)
                 else:
                     # print '.text: {} ({})'.format(message, type(message))
                     emit_text(kbd, unicode(message))

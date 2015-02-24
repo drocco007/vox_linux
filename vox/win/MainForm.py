@@ -60,7 +60,7 @@ keys = {
     Keys.F11: 'F11',
     Keys.F12: 'F12',
     Keys.Oem1: ';',
-    Keys.Oem5: '|',
+    Keys.Oem5: '\\',
     Keys.Oem6: ']',
     Keys.Oem7: '\'',
 }

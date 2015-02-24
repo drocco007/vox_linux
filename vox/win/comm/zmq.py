@@ -19,10 +19,11 @@ socket.Connect('tcp://vmhost:5555')
 def send_text(text):
 	pass
 
-
+# FIXME: these names are terrible
+# FIXME: pull in predefined constants
 def send_key(key):
-	socket.Send(key, Encoding.UTF8)
+    socket.Send('\x03' + key, Encoding.UTF8)
 
 
 def send_command(text):
-	send_key('\x02' + text)
+	socket.Send('\x02' + text, Encoding.UTF8)
