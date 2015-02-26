@@ -43,7 +43,7 @@ def sniff_titles(screen=None, host='localhost'):
 
 
 def broadcast_title_changes(host='localhost'):
-    return spawn_daemon_process(sniff_titles, call_kw={'host': host})
+    return [spawn_daemon_process(sniff_titles, call_kw={'host': host})]
 
 
 def stop():

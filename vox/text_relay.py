@@ -188,4 +188,4 @@ def relay_text_worker(host='localhost'):
 
 
 def relay_text(host='localhost'):
-    return spawn_daemon_process(relay_text_worker, call_kw={'host': host})
+    return [spawn_daemon_process(relay_text_worker, call_kw={'host': host})]

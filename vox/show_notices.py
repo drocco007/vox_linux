@@ -64,4 +64,4 @@ def show_notice_worker(host='localhost'):
 
 
 def show_notices(host='localhost'):
-    return spawn_daemon_process(show_notice_worker, call_kw={'host': host})
+    return [spawn_daemon_process(show_notice_worker, call_kw={'host': host})]

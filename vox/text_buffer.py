@@ -64,6 +64,8 @@ def ss(host='localhost'):
 
 
 def manage_text_buffer(host='localhost'):
-    spawn_daemon_process(ss, call_kw={'host': host})
-    return spawn_daemon_process(manage_buffer_on_app_switch,
-                                call_kw={'host': host})
+    return [
+        spawn_daemon_process(ss, call_kw={'host': host}),
+        spawn_daemon_process(manage_buffer_on_app_switch,
+                             call_kw={'host': host})
+    ]
