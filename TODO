@@ -1,3 +1,4 @@
+· refactor zmq code to common routine
 · finish the sublime text buffer synchronizer
 · add support for performing buffer synchronization as last step of
   movement commands in dragonfly (Key, Text subclasses?)
@@ -5,5 +6,4 @@
 · pull text buffer, tests into main package
 · pull in dragon bits from glue repository
 · rewrite bus in Python
-· make notify, command execution (main.py) subprocesses
 · extract vox bits from natlinkmain.py
