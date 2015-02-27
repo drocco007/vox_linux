@@ -11,8 +11,8 @@ Prerequisites
 
 You will need a Linux host (I use Xubuntu) with
 
-* GTK, xdotool + libxdo3, wmctrl, ØMQ
-* Python 2.7 with python-gtk2, python-wnck, python-xlib, python-libxdo,
+* GTK, wmctrl, ØMQ
+* Python 2.7 with python-gtk2, python-wnck, python-xlib, python-uinput,
   tornado, pyzmq
 * VirtualBox
 

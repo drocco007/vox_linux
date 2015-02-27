@@ -108,6 +108,7 @@ chord_map = {
     '?': [uinput.KEY_LEFTSHIFT, uinput.KEY_SLASH],
     '"': [uinput.KEY_LEFTSHIFT, uinput.KEY_APOSTROPHE],
     '+': [uinput.KEY_LEFTSHIFT, uinput.KEY_EQUAL],
+    '_': [uinput.KEY_LEFTSHIFT, uinput.KEY_MINUS],
 }
 
 
