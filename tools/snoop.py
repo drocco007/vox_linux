@@ -3,7 +3,8 @@ import sys
 
 logging.basicConfig(level=logging.DEBUG)
 
-import zmq
+from vox import bus
+
 
 if len(sys.argv) > 1:
     host = sys.argv[1]
@@ -11,11 +12,7 @@ else:
     host = 'localhost'
 
 
-context = zmq.Context()
-socket = context.socket(zmq.SUB)
-
-socket.connect("tcp://{}:5556".format(host))
-socket.setsockopt(zmq.SUBSCRIBE, '')
+socket = bus.connect_subscribe(host=host)
 
 while True:
     message = socket.recv()

@@ -1,4 +1,3 @@
-· refactor zmq code to common routine
 · finish the sublime text buffer synchronizer
 · add support for performing buffer synchronization as last step of
   movement commands in dragonfly (Key, Text subclasses?)

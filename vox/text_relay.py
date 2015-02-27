@@ -1,8 +1,8 @@
 # coding: utf-8
 
 import uinput
-import zmq
 
+import bus
 from commands import PRESS_KEY, PLAY_TEXT
 from process_utils import spawn_daemon_process
 
@@ -112,19 +112,6 @@ chord_map = {
 }
 
 
-# FIXME: extract to a common module
-def init_zmq(host='localhost'):
-    context = zmq.Context()
-
-    socket = context.socket(zmq.SUB)
-    socket.connect('tcp://{}:5556'.format(host))
-
-    socket.setsockopt(zmq.SUBSCRIBE, PRESS_KEY)
-    socket.setsockopt(zmq.SUBSCRIBE, PLAY_TEXT)
-
-    return socket
-
-
 def unpack_keycodes(command):
     if '-' in command:
         modifiers, command = command.split('-', 1)
@@ -164,7 +151,8 @@ def emit_text(kbd, text):
 
 
 def relay_text_worker(host='localhost'):
-    socket = init_zmq(host=host)
+    socket = bus.connect_subscribe(host=host,
+                                   subscriptions=(PRESS_KEY, PLAY_TEXT))
 
     all_keys = [uinput.ev.__dict__[k]
                 for k in uinput.ev.__dict__.keys() if k.startswith('KEY_')]

@@ -6,30 +6,15 @@ import tornado.websocket
 import tornado.ioloop
 import tornado.web
 
-import zmq
-
+import bus
 from commands import BROADCAST_APPLICATION_TITLE, CLEAR_BUFFER_COMMAND
 from process_utils import spawn_daemon_process
 
 
-def init_zmq(host='localhost', init_in=True, init_out=True):
-    context = zmq.Context()
-    in_socket = out_socket = None
-
-    if init_in:
-        in_socket = context.socket(zmq.SUB)
-        in_socket.connect('tcp://{}:5556'.format(host))
-        in_socket.setsockopt(zmq.SUBSCRIBE, BROADCAST_APPLICATION_TITLE)
-
-    if init_out:
-        out_socket = context.socket(zmq.PUB)
-        out_socket.connect('tcp://{}:5555'.format(host))
-
-    return context, in_socket, out_socket
-
-
 def manage_buffer_on_app_switch(host='localhost'):
-    context, _in, _out = init_zmq(host=host)
+    _in = bus.connect_subscribe(host=host,
+                                subscriptions=(BROADCAST_APPLICATION_TITLE,))
+    _out = bus.connect_publish(host=host)
 
     while True:
         message = _in.recv()

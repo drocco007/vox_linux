@@ -4,23 +4,13 @@ import shlex
 from subprocess import Popen
 import sys
 
-import zmq
-
+import bus
 from commands import RUN_COMMAND
 from process_utils import spawn_daemon_process
 
 
-def init_zmq(host='localhost'):
-    context = zmq.Context()
-    socket = context.socket(zmq.SUB)
-    socket.connect('tcp://{}:5556'.format(host))
-    socket.setsockopt(zmq.SUBSCRIBE, RUN_COMMAND)
-
-    return socket
-
-
 def run_command_worker(host='localhost'):
-    socket = init_zmq(host=host)
+    socket = bus.connect_subscribe(host=host, subscriptions=(RUN_COMMAND,))
 
     while True:
         message = socket.recv()
