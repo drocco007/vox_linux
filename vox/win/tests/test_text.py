@@ -181,3 +181,26 @@ def test_scratch_selection():
     assert buf.selection_length == 0
 
     assert ('key', 'BackSpace', 1) == delta[0]
+
+
+def test_insert_before_prefix_match():
+    """Difficult edge case where initial characters would sometimes be inserted
+    after the dictated word preceded by a space:
+
+    Existing: ^it
+    Dictate: itinerary
+    Expected: itinerary ^it
+
+    Prior to the fix, this scenario would produce "inerary itit"
+
+    """
+
+    buf = Text('it',  0)
+    text = 'itinerary it'
+    buf, delta = buf.set_text(text)
+
+    assert buf.text == text
+    assert buf.position ==  10
+    assert buf.selection_length == 0
+
+    assert 'itinerary ' == delta[0]

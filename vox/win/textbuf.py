@@ -3,9 +3,40 @@
 from difflib import SequenceMatcher
 
 
+def prune_matching_insertion_suffix(a, b, insert_point):
+    """When inserting before some text, prefer inserting before a matching
+    suffix.
+
+    When inserting new text before some existing text, the SequenceMatcher
+    wants to preserve any matching suffix on the left of the resulting edits.
+    Suppose the existing text is 'it' and of the new text is 'itinerary it'.
+    The SequenceMatcher will produce an insertion at position 2:
+
+        it[inerary it]
+
+    While the text here is correct, this makes keeping track of our insertion
+    point much harder. This function forces the SequenceMatcher to produce a
+    left-anchored insertion:
+
+        [itinerary ]it
+
+
+    """
+    insert_suffix = SequenceMatcher(None, a[insert_point:], b[insert_point:]) \
+        .get_matching_blocks()[0]
+
+    if insert_suffix.a == 0 and insert_suffix.b == 0 and insert_suffix.size:
+        a = a[:-insert_suffix.size]
+        b = b[:-insert_suffix.size]
+
+    return a, b
+
+
 def generate_edit_keys(a, b, position=None):
     if position is None:
         position = len(a)
+
+    a, b = prune_matching_insertion_suffix(a, b, position)
 
     length = 0
     edits = []
