@@ -154,8 +154,8 @@ def relay_text_worker(host='localhost'):
     socket = bus.connect_subscribe(host=host,
                                    subscriptions=(PRESS_KEY, PLAY_TEXT))
 
-    all_keys = [uinput.ev.__dict__[k]
-                for k in uinput.ev.__dict__.keys() if k.startswith('KEY_')]
+    all_keys = [v for k,v in uinput.ev.__dict__.items()
+                if k.startswith('KEY_')]
 
     with uinput.Device(all_keys) as kbd:
         while True:
