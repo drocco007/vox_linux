@@ -167,7 +167,7 @@ def test_correct_selection_on_initial_insert():
     buf, delta = buf.set_text(text)
 
     assert buf.text == text
-    assert buf.position ==  13
+    assert buf.position == 13
     assert buf.selection_length == 0
 
 
@@ -177,13 +177,14 @@ def test_scratch_selection():
     buf, delta = buf.set_text(text)
 
     assert buf.text == text
-    assert buf.position ==  0
+    assert buf.position == 0
     assert buf.selection_length == 0
 
+    assert 1 == len(delta)
     assert ('key', 'BackSpace', 1) == delta[0]
 
 
-def test_insert_before_prefix_match():
+def test_insert_before_suffix_match():
     """Difficult edge case where initial characters would sometimes be inserted
     after the dictated word preceded by a space:
 
@@ -200,7 +201,65 @@ def test_insert_before_prefix_match():
     buf, delta = buf.set_text(text)
 
     assert buf.text == text
-    assert buf.position ==  10
+    assert buf.position == 10
     assert buf.selection_length == 0
 
+    assert 1 == len(delta)
     assert 'itinerary ' == delta[0]
+
+
+def test_insert_before_suffix_mismatch():
+    buf = Text('match',  0)
+    text = "doesn't match"
+    buf, delta = buf.set_text(text)
+
+    assert buf.text == text
+    assert buf.position == 8
+    assert buf.selection_length == 0
+
+    assert 1 == len(delta)
+    assert "doesn't " == delta[0]
+
+
+def test_insert_after_common_prefix():
+    """
+
+    Existing: Returns^ a subset
+    Dictate: a set
+    Expected: Returns a set^ a subset
+    Failure case: Returnset a s^ a subset
+
+    """
+
+    buf = Text('Returns a subset',  7)
+    text = 'Returns a set a subset'
+    buf, delta = buf.set_text(text)
+
+    assert buf.text == text
+    assert buf.position == 13
+    assert buf.selection_length == 0
+
+    assert 1 == len(delta)
+    assert ' a set' == delta[0]
+
+
+def test_insert_after_common_prefix_space():
+    """
+
+    Existing: Returns ^a subset
+    Dictate: a set
+    Expected: Returns a set ^a subset
+    Failure case: Returns et a s^a subset
+
+    """
+
+    buf = Text('Returns a subset',  8)
+    text = 'Returns a set a subset'
+    buf, delta = buf.set_text(text)
+
+    assert buf.text == text
+    assert buf.position == 14
+    assert buf.selection_length == 0
+
+    assert 1 == len(delta)
+    assert 'a set ' == delta[0]

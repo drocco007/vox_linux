@@ -3,40 +3,49 @@
 from difflib import SequenceMatcher
 
 
-def prune_matching_insertion_suffix(a, b, insert_point):
+def prune_dictation_context(a, b, insert_point):
     """When inserting before some text, prefer inserting before a matching
     suffix.
 
     When inserting new text before some existing text, the SequenceMatcher
     wants to preserve any matching suffix on the left of the resulting edits.
-    Suppose the existing text is 'it' and of the new text is 'itinerary it'.
-    The SequenceMatcher will produce an insertion at position 2:
+    Suppose the existing text is 'it', the insertion point is at the beginning
+    of the string, and the new text is 'itinerary it'. The SequenceMatcher will
+    produce an insertion at position 2:
 
         it[inerary it]
 
     While the text here is correct, this makes keeping track of our insertion
-    point much harder. This function forces the SequenceMatcher to produce a
+    point much harder (for this particular example, the new insertion point
+    is after the space). This function forces the SequenceMatcher to produce a
     left-anchored insertion:
 
         [itinerary ]it
 
 
     """
-    insert_suffix = SequenceMatcher(None, a[insert_point:], b[insert_point:]) \
-        .get_matching_blocks()[0]
+    # prune matching context before the insertion point
+    insert_prefix = first_mismatch(a, b, insert_point)
+    if insert_prefix:
+        a = a[insert_prefix:]
+        b = b[insert_prefix:]
+        insert_point -= insert_prefix
 
-    if insert_suffix.a == 0 and insert_suffix.b == 0 and insert_suffix.size:
-        a = a[:-insert_suffix.size]
-        b = b[:-insert_suffix.size]
+    # prune coincidental character matches between the text after the insertion
+    # point and the incoming text
+    insert_suffix = first_mismatch(a[insert_point:], b[insert_point:])
+    if insert_suffix:
+        a = a[:-insert_suffix]
+        b = b[:-insert_suffix]
 
-    return a, b
+    return a, b, insert_point
 
 
 def generate_edit_keys(a, b, position=None):
     if position is None:
         position = len(a)
 
-    a, b = prune_matching_insertion_suffix(a, b, position)
+    a, b, position = prune_dictation_context(a, b, position)
 
     length = 0
     edits = []
@@ -129,3 +138,18 @@ class Text(object):
             length=self.selection_length,
             selected_text=self.selection,
         )
+
+
+def first_mismatch(a, b, limit=None):
+    """Find the index of the first differing element between two sequences."""
+
+    if limit == 0:
+        return limit
+
+    enumerator = xrange(max(len(a), len(b)))
+
+    for i, _a, _b in zip(enumerator, a, b):
+        if _a != _b or (limit and i >= limit):
+            return i
+    else:
+        return min(len(a), len(b))
