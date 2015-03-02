@@ -4,6 +4,7 @@ import sys
 
 import zmq
 
+from bus import init_message_bus
 from dgram_relay import datagram_relay
 from run_command import run_commands
 from show_notices import show_notices
@@ -18,11 +19,8 @@ if len(sys.argv) > 1:
     host = sys.argv[1]
 
 
-print 'listening on tcp://{}:5556'.format(host)
-print 'FIXME: publishing to tcp://{}:5558'.format('xpvoice')
-
-
 worker_lists = [
+    init_message_bus(),
     show_notices(host=host),
     manage_text_buffer(host=host),
     broadcast_title_changes(host=host),

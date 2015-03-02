@@ -4,5 +4,4 @@
 · finish Chrome text entry synchronizer
 · pull text buffer, tests into main package
 · pull in dragon bits from glue repository
-· rewrite bus in Python
 · extract vox bits from natlinkmain.py
