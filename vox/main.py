@@ -4,6 +4,7 @@ import sys
 
 import zmq
 
+from dgram_relay import datagram_relay
 from run_command import run_commands
 from show_notices import show_notices
 from text_buffer import manage_text_buffer
@@ -26,7 +27,8 @@ worker_lists = [
     manage_text_buffer(host=host),
     broadcast_title_changes(host=host),
     relay_text(host=host),
-    run_commands(host=host)
+    run_commands(host=host),
+    datagram_relay(host=host),
 ]
 
 [worker.join() for worker_list in worker_lists for worker in worker_list]

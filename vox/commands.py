@@ -25,3 +25,11 @@ def format_app_name_command(window_name, application_name):
                              window_name,
                              RECORD_SEPARATOR,
                              application_name)
+
+
+def format_set_buffer_text_command(text):
+    "Format application name and title broadcast command"
+
+    return '{}{}{}'.format(MANAGE_BUFFER,
+                           BUFFER_SET_TEXT,
+                           text)
