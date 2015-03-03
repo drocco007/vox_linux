@@ -31,9 +31,8 @@ def prune_dictation_context(a, b, insert_point):
         b = b[insert_prefix:]
         insert_point -= insert_prefix
 
-    # prune coincidental character matches between the text after the insertion
-    # point and the incoming text
-    insert_suffix = first_mismatch(a[insert_point:], b[insert_point:])
+    # prune matching context after the insertion point
+    insert_suffix = first_mismatch(a[::-1], b[::-1])
     if insert_suffix:
         a = a[:-insert_suffix]
         b = b[:-insert_suffix]

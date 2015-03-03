@@ -208,6 +208,28 @@ def test_insert_before_suffix_match():
     assert 'itinerary ' == delta[0]
 
 
+def test_insert_before_suffix_match2():
+    """
+
+    Existing: works ^it
+    Dictate: in practice
+    Expected: works in practice ^it
+    Failure: works n practice i^it
+
+    """
+
+    buf = Text('works it',  6)
+    text = 'works in practice it'
+    buf, delta = buf.set_text(text)
+
+    assert buf.text == text
+    assert buf.position == 18
+    assert buf.selection_length == 0
+
+    assert 1 == len(delta)
+    assert 'in practice ' == delta[0]
+
+
 def test_insert_before_suffix_mismatch():
     buf = Text('match',  0)
     text = "doesn't match"
