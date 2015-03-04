@@ -3,7 +3,6 @@
     · expand context (line? paragraph?)
     · send and set selection
     · extract message unpacking (and packing?) to message module
-    · pull sublime plugin into main repository
     · add support for performing buffer synchronization as last step of
       movement commands in dragonfly (Key, Text subclasses?)
 · finish Chrome text entry synchronizer
