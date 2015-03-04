@@ -167,10 +167,10 @@ def relay_text_worker(host='localhost'):
                 if command == PRESS_KEY:
                     keycodes = unpack_keycodes(message)
 
-                    # print '.key:', message[1:], '→', keycodes
+                    print '.key:', message, '→', keycodes
                     kbd.emit_combo(keycodes)
                 else:
-                    # print '.text: {} ({})'.format(message, type(message))
+                    print '.text: {} ({})'.format(message, type(message))
                     emit_text(kbd, unicode(message))
             except ValueError as e:
                 print u'Error processing message: {}'.format(message)

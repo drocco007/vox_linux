@@ -1,10 +1,14 @@
+· figure out where dictation is occasionally getting stuck (uinput?)
 · finish the sublime text buffer synchronizer
     · expand context (line? paragraph?)
     · send and set selection
     · extract message unpacking (and packing?) to message module
+    · pull sublime plugin into main repository
     · add support for performing buffer synchronization as last step of
       movement commands in dragonfly (Key, Text subclasses?)
 · finish Chrome text entry synchronizer
 · pull text buffer, tests into main package
 · pull in dragon bits from glue repository
 · extract vox bits from natlinkmain.py
+· move GitHub repository→vox
+· redirect old GitHub repositories
