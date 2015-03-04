@@ -21,6 +21,11 @@ def bind(address=None):
     if os.path.exists(address):
         os.unlink(address)
 
+    # In case you are tempted to try again: datagram sockets won't work
+    # here because they don't support messages that are longer than the
+    # block size:
+    # http://www.gnu.org/software/libc/manual/html_node/Receiving-Datagrams.html  # noqa
+
     s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     s.bind(address)
     s.listen(1)
@@ -69,11 +74,12 @@ def serve_forever(zmq_host='localhost'):
     while True:
         conn, client_address = s.accept()
         message, remainder = receive_message(conn, remainder)
-        message_length, target_point, selection_length, text = unpack_message(message)
+        message_length, target_point, selection_length, text = \
+            unpack_message(message)
         print message_length, target_point, selection_length, repr(text)
 
         out_socket.send(format_set_buffer_text_command(text))
 
 
-def datagram_relay(host='localhost'):
+def socket_relay(host='localhost'):
     return [spawn_daemon_process(serve_forever, call_kw={'zmq_host': host})]

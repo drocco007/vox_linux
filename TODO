@@ -1,6 +1,9 @@
 · finish the sublime text buffer synchronizer
-· add support for performing buffer synchronization as last step of
-  movement commands in dragonfly (Key, Text subclasses?)
+    · expand context (line? paragraph?)
+    · send and set selection
+    · extract message unpacking (and packing?) to message module
+    · add support for performing buffer synchronization as last step of
+      movement commands in dragonfly (Key, Text subclasses?)
 · finish Chrome text entry synchronizer
 · pull text buffer, tests into main package
 · pull in dragon bits from glue repository
