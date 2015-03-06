@@ -32,7 +32,7 @@ Application.Run(form)
 
 
 # Clean up
-zmq.send_key('\x01Bridge exiting')
+zmq.notify('Bridge exiting')
 zmq.socket.Dispose()
 zmq.context.Dispose()
 

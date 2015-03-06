@@ -26,4 +26,8 @@ def send_key(key):
 
 
 def send_command(text):
-	socket.Send('\x02' + text, Encoding.UTF8)
+    socket.Send('\x02' + text, Encoding.UTF8)
+
+
+def notify(text):
+	socket.Send('\x01' + text, Encoding.UTF8)
