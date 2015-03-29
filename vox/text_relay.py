@@ -77,6 +77,7 @@ key_map = {
     '-': uinput.KEY_MINUS,
     'minus': uinput.KEY_MINUS,
     '=': uinput.KEY_EQUAL,
+    '~': uinput.KEY_GRAVE,
 
     'Left': uinput.KEY_LEFT,
     'Right': uinput.KEY_RIGHT,
