@@ -43,7 +43,7 @@ class WinSpy(Gtk.Window):
         self.win_connect()
 
     def win_connect(self):
-        Popen(['xfreerdp', '-X', self.xid, 'voicehost'])
+        Popen(['xfreerdp', '-K', '-X', self.xid, 'voicehost'])
 
 
 def main():
